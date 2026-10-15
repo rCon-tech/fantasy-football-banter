@@ -1,0 +1,55 @@
+{
+  "season": "2026/2027",
+  "league": "Fantasy Forge Banter",
+  "gameweek": 6,
+  "gameweekFinished": true,
+  "gameweeks": 38,
+  "updated": "2026-10-15T14:28:15.110Z",
+  "entries": [
+    {
+      "manager": "Con",
+      "team": "2 Fast 2 DeZerbi-ous",
+      "total": 429,
+      "gameweekPoints": 69,
+      "rank": 1,
+      "lastRank": 1,
+      "overallRank": 420016
+    },
+    {
+      "manager": "Steve",
+      "team": "Millie Brobbey Brown",
+      "total": 413,
+      "gameweekPoints": 64,
+      "rank": 2,
+      "lastRank": 2,
+      "overallRank": 946814
+    },
+    {
+      "manager": "Davs",
+      "team": "Neymar Nay Less",
+      "total": 394,
+      "gameweekPoints": 77,
+      "rank": 3,
+      "lastRank": 4,
+      "overallRank": 1924122
+    },
+    {
+      "manager": "Cuffe",
+      "team": "cunha give us a lift",
+      "total": 383,
+      "gameweekPoints": 47,
+      "rank": 4,
+      "lastRank": 3,
+      "overallRank": 2651016
+    },
+    {
+      "manager": "Joyce",
+      "team": "GeorgeTeam",
+      "total": 356,
+      "gameweekPoints": 46,
+      "rank": 5,
+      "lastRank": 5,
+      "overallRank": 4720635
+    }
+  ]
+}

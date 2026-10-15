@@ -243,4 +243,23 @@
       : '<p class="empty">No bets match. Nobody’s that confident.</p>';
   }
   renderBets();
+
+  /* ---------- live season (live.json is refreshed by the deploy workflow) ---------- */
+  (async function loadLive() {
+    let live;
+    try { const res = await fetch('live.json', { cache: 'no-cache' }); if (!res.ok) return; live = await res.json(); } catch { return; }
+    if (!live?.entries?.length) return;
+    const rows = live.entries, lead = rows[0].total, last = rows.length - 1;
+    $('#liveTitle').textContent = `${live.season.replace('/20', '/')} · Gameweek ${live.gameweek ?? '–'} of ${live.gameweeks}`;
+    const move = (r) => { const d = r.lastRank - r.rank; return d > 0 ? `<span class="up" title="Up ${d}">▲${d}</span>` : d < 0 ? `<span class="down" title="Down ${-d}">▼${-d}</span>` : '<span class="dim">–</span>'; };
+    $('#liveTable').innerHTML = '<thead><tr><th>Pos</th><th>Manager</th><th>Pts</th><th>Gap</th><th>GW pts</th><th>Move</th><th>Overall rank</th></tr></thead><tbody>' +
+      rows.map((r, i) => `<tr class="${i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : ''} ${i === last ? 'last' : ''}">
+        <td class="pos">${r.rank}</td>
+        <td class="mgr">${av(r.manager, { size: 44, crown: i === 0, wasp: i === last })}<span>${esc(r.manager)}<small class="team">${esc(r.team)}</small></span></td>
+        <td class="pts">${fmt(r.total)}</td><td class="gap">${i === 0 ? '—' : '−' + (lead - r.total)}</td>
+        <td>${fmt(r.gameweekPoints)}</td><td>${move(r)}</td><td>${fmt(r.overallRank)}</td></tr>`).join('') + '</tbody>';
+    const when = new Date(live.updated);
+    $('#liveNote').textContent = `The crown and wasp show who would win and lose if the season ended now. Pulled from the FPL site; refreshed every few hours. Last update: ${when.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}.`;
+    $('#live').hidden = false; $('#liveNav').hidden = false;
+  })();
 })();

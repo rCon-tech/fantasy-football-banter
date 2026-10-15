@@ -225,3 +225,12 @@ footer { margin-top: 56px; padding: 22px 0 32px; text-align: center; color: var(
   .crown, .crown img, .wasp, .wasp img, .av.stung .face, .av.big.stung::after { animation: none !important; }
   .wasp { transform: translate(calc(var(--s) * -.2), calc(var(--s) * .1)); }
 }
+
+/* live season */
+.live-num { background: var(--red); color: #fff; letter-spacing: .08em; position: relative; padding-left: 26px; }
+.live-num::before { content: ''; position: absolute; left: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: #fff; animation: live-pulse 1.6s ease-in-out infinite; }
+@keyframes live-pulse { 50% { opacity: .25; } }
+.team { display: block; font-family: var(--font-b); font-weight: 400; font-size: .8rem; letter-spacing: 0; color: var(--muted); }
+.up { color: #2fbf71; font-weight: 700; } .down { color: var(--red); font-weight: 700; }
+.mgr > span { display: inline-block; vertical-align: middle; }
+@media (prefers-reduced-motion: reduce) { .live-num::before { animation: none; } }

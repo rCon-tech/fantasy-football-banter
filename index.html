@@ -15,6 +15,7 @@
     <div class="wrap top-in">
       <a href="#" class="brand"><span class="ball" aria-hidden="true"></span><span>FANTASY FOOTBALL <b>BANTER</b></span></a>
       <nav aria-label="Sections">
+        <a href="#live" id="liveNav" hidden>Live</a>
         <a href="#table">League Table</a>
         <a href="#alltime">All-Time</a>
         <a href="#charts">Form Guide</a>
@@ -32,6 +33,12 @@
         <h1>The Stats</h1>
         <div class="scoreboard" id="scoreboard" aria-label="Title tally"></div>
       </div>
+    </section>
+
+    <section id="live" class="wrap block" hidden>
+      <h2><span class="num live-num">LIVE</span> <span id="liveTitle">This Season</span></h2>
+      <div class="card"><div class="tablewrap"><table id="liveTable"></table></div></div>
+      <p class="note" id="liveNote"></p>
     </section>
 
     <section id="table" class="wrap block">
