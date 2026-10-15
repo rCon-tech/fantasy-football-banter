@@ -259,7 +259,7 @@
         <td class="pts">${fmt(r.total)}</td><td class="gap">${i === 0 ? '—' : '−' + (lead - r.total)}</td>
         <td>${fmt(r.gameweekPoints)}</td><td>${move(r)}</td><td>${fmt(r.overallRank)}</td></tr>`).join('') + '</tbody>';
     const when = new Date(live.updated);
-    $('#liveNote').textContent = `The crown and wasp show who would win and lose if the season ended now. Pulled from the FPL site; refreshed every few hours. Last update: ${when.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}.`;
+    $('#liveNote').textContent = `The crown and wasp show who would win and lose if the season ended today. Standings from the FPL site, updated once each gameweek is fully finished. Last update: ${when.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}.`;
     $('#live').hidden = false; $('#liveNav').hidden = false;
   })();
 })();

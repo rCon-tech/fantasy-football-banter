@@ -15,8 +15,16 @@ async function get(path) {
 }
 
 try {
-  const [league, boot] = await Promise.all([get(`/leagues-classic/${LEAGUE_ID}/standings/`), get('/bootstrap-static/')]);
+  const boot = await get('/bootstrap-static/');
   const gw = boot.events.find((e) => e.is_current) ?? boot.events.find((e) => e.is_next);
+  // Only publish standings once every match in the gameweek is done and FPL has finalised the points.
+  // FORCE=1 (manual runs) skips this check.
+  if (!process.env.FORCE) {
+    if (!gw?.finished) { console.log(`Gameweek ${gw?.id} is still in progress. Keeping the previous standings.`); process.exit(0); }
+    const prev = await readFile(new URL('../live.json', import.meta.url), 'utf8').then(JSON.parse, () => null);
+    if (prev?.gameweek === gw.id && prev.gameweekFinished) { console.log(`Gameweek ${gw.id} is already published. Nothing to do.`); process.exit(0); }
+  }
+  const league = await get(`/leagues-classic/${LEAGUE_ID}/standings/`);
   const rows = league.standings.results.filter((r) => MANAGERS[r.entry]);
   const entries = [];
   for (const r of rows) {
