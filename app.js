@@ -68,6 +68,8 @@
   tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { current = +b.dataset.i; renderSeason(); } });
   function renderSeason() {
     tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', +b.dataset.i === current));
+    const sel = tabs.querySelector('[aria-selected=true]'); // keep the chosen season in view on narrow screens
+    if (sel) tabs.scrollLeft = sel.offsetLeft - (tabs.clientWidth - sel.offsetWidth) / 2;
     const rows = tables[current].rows, lead = rows[0]?.pts, off = isOfficial(tables[current].season);
     $('#seasonNote').hidden = off;
     $('#seasonTable').innerHTML = `<thead><tr><th>Pos</th><th>Manager</th><th>Pts</th><th>Gap</th><th>Overall rank</th></tr></thead><tbody>` +
@@ -150,17 +152,18 @@
   });
 
   function lineChart(el, { value, y0, y1, ticks, label, valueFmt }) {
-    const W = 520, H = 300, L = 46, R = 12, T = 12, B = 34, n = seasons.length;
+    const W = Math.max(300, Math.round(el.clientWidth || 520)), H = W < 480 ? Math.round(W * 0.82) : 300, L = 46, R = 12, T = 12, B = 34, n = seasons.length;
     const x = (i) => L + (i * (W - L - R)) / (n - 1), y = (v) => T + ((y1 - value.scale(v)) / (y1 - y0)) * (H - T - B);
     let g = ticks.map((t) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${label(t)}</text>`).join('');
-    g += seasons.map((s, i) => `<text x="${x(i)}" y="${H - 12}" text-anchor="middle">${s.season.slice(2, 4)}/${s.season.slice(7)}</text>`).join('');
+    const sparse = (W - L - R) / (n - 1) < 34; // on narrow screens label every other season
+    g += seasons.map((s, i) => (sparse && (n - 1 - i) % 2 ? '' : `<text x="${x(i)}" y="${H - 12}" text-anchor="middle">${s.season.slice(2, 4)}/${s.season.slice(7)}</text>`)).join('');
     managers.filter((m) => active.has(m)).forEach((m) => {
       let d = '', dots = '', pen = false;
       seasons.forEach((s, i) => {
         const v = value.get(s, m);
         if (v == null) { pen = false; return; }
         d += `${pen ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true;
-        dots += `<circle class="hit" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="5" fill="${COLORS[m]}" stroke="#062613" stroke-width="2" data-tip="<b>${esc(m)}</b> · ${esc(s.season)}<br>${valueFmt(v, s, m)}" tabindex="0"/>`;
+        dots += `<circle class="hit" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${W < 480 ? 6 : 5}" fill="${COLORS[m]}" stroke="#062613" stroke-width="2" data-tip="<b>${esc(m)}</b> · ${esc(s.season)}<br>${valueFmt(v, s, m)}" tabindex="0"/>`;
       });
       g += `<path d="${d}" fill="none" stroke="${COLORS[m]}" stroke-width="2.5" stroke-linejoin="round"/>${dots}`;
     });
@@ -184,6 +187,8 @@
   document.addEventListener('focusout', hideTip);
   document.addEventListener('click', (e) => { const c = e.target.closest('[data-tip]'); if (c) { const r = c.getBoundingClientRect(); showTip(c.dataset.tip, r.left + r.width / 2, r.top); } else hideTip(); });
   drawCharts();
+  let chartW = innerWidth;
+  addEventListener('resize', () => { if (innerWidth !== chartW) { chartW = innerWidth; drawCharts(); } });
 
   /* ---------- head to head ---------- */
   const selA = $('#h2hA'), selB = $('#h2hB');
@@ -274,6 +279,28 @@
     $('#fplRar').hidden = false;
   }
 
+  /* ---------- menu (phones) and section highlighting ---------- */
+  const menuBtn = $('#menuBtn'), nav = $('#nav');
+  const setMenu = (open) => { nav.classList.toggle('open', open); menuBtn.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+  menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+  nav.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
+  document.addEventListener('click', (e) => { if (nav.classList.contains('open') && !e.target.closest('.top')) setMenu(false); });
+  addEventListener('resize', () => { if (innerWidth > 820) setMenu(false); });
+  {
+    const links = new Map([...nav.querySelectorAll('a[href^="#"]')].map((a) => [a.getAttribute('href').slice(1), a]));
+    const sections = [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+    let queued = false;
+    const spy = () => { // highlight the last section whose top has scrolled past the header
+      queued = false;
+      let cur = null;
+      for (const s of sections) if (!s.hidden && s.getBoundingClientRect().top <= 120) cur = s.id;
+      links.forEach((a, id) => (id === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    };
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(spy); } }, { passive: true });
+    spy();
+  }
+
   /* ---------- live season (live.json is refreshed by the deploy workflow) ---------- */
   (async function loadLive() {
     let live;
@@ -285,7 +312,7 @@
     $('#liveTable').innerHTML = '<thead><tr><th>Pos</th><th>Manager</th><th>Pts</th><th>Gap</th><th>GW pts</th><th>Move</th><th>Overall rank</th></tr></thead><tbody>' +
       rows.map((r, i) => `<tr class="${i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : ''} ${i === last ? 'last' : ''}">
         <td class="pos">${r.rank}</td>
-        <td class="mgr">${av(r.manager, { size: 44, crown: i === 0, wasp: i === last })}<span>${esc(r.manager)}<small class="team">${esc(r.team)}</small></span></td>
+        <td class="mgr">${av(r.manager, { size: 44, crown: i === 0, wasp: i === last })}<span>${esc(r.manager)}<small class="team d-only">${esc(r.team)}</small><small class="team m-only">GW ${fmt(r.gameweekPoints)} · World ${fmtRank(r.overallRank)}</small></span></td>
         <td class="pts">${fmt(r.total)}</td><td class="gap">${i === 0 ? '—' : '−' + (lead - r.total)}</td>
         <td>${fmt(r.gameweekPoints)}</td><td>${move(r)}</td><td>${fmt(r.overallRank)}</td></tr>`).join('') + '</tbody>';
     const when = new Date(live.updated);
