@@ -234,3 +234,38 @@ footer { margin-top: 56px; padding: 22px 0 32px; text-align: center; color: var(
 .up { color: #2fbf71; font-weight: 700; } .down { color: var(--red); font-weight: 700; }
 .mgr > span { display: inline-block; vertical-align: middle; }
 @media (prefers-reduced-motion: reduce) { .live-num::before { animation: none; } }
+
+/* ---------- FFB Golf ---------- */
+.golf h2 .num { background: #f6f1e3; }
+.course { display: grid; grid-template-columns: 1fr minmax(180px, 260px); gap: 8px 24px; align-items: center; position: relative; overflow: hidden; border-radius: 14px; border: 3px solid #f6f1e3; padding: 28px 24px;
+  background: repeating-linear-gradient(135deg, #2c8541 0 36px, #34944b 36px 72px); box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.course-main { min-width: 0; }
+.sign { text-align: center; margin: 0 auto 22px; max-width: 520px; padding: 12px 16px 14px; background: #0f3a21; border: 3px solid #d8b24a; border-radius: 8px; box-shadow: 0 4px 0 rgba(0,0,0,.3); }
+.sign-k { font-family: var(--font-c); font-weight: 700; letter-spacing: .3em; text-transform: uppercase; font-size: .8rem; color: #d8b24a; }
+.sign-t { font-family: var(--font-d); font-size: clamp(2.2rem, 7vw, 3.4rem); letter-spacing: .06em; line-height: 1.05; color: #f6f1e3; }
+.sign-s { font-family: var(--font-c); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #cfe3d3; }
+.honours { list-style: none; margin: 0 auto; padding: 0; max-width: 520px; display: grid; gap: 12px; }
+.gline { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: #f6f1e3; color: #14301d; border-radius: 10px; border-left: 8px solid #d8b24a; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+.gline .av { margin-right: 4px; }
+.gline .av .face { border-color: #d8b24a; }
+.gname { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.gn { font-family: var(--font-d); font-size: 2rem; letter-spacing: .05em; line-height: 1.05; overflow-wrap: anywhere; }
+.gc { font-family: var(--font-c); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: .85rem; color: #2c7a43; }
+.gscore { display: flex; flex-direction: column; align-items: center; background: #0f3a21; color: #f6f1e3; border-radius: 8px; padding: 4px 16px 6px; }
+.gs { font-family: var(--font-d); font-size: 3.2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.gl { font-family: var(--font-c); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-size: .7rem; color: #d8b24a; }
+.golf-note { text-align: center; color: #e6f2e8; margin-top: 16px; }
+.green { position: relative; justify-self: center; width: 100%; max-width: 240px; }
+.hole { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 6px rgba(0,0,0,.3)); }
+.flag { transform-origin: 112px 55px; animation: flag-wave 2.4s ease-in-out infinite; }
+@keyframes flag-wave { 0%, 100% { transform: skewY(0) scaleX(1); } 50% { transform: skewY(-4deg) scaleX(.93); } }
+/* one putt: the ball rolls in and drops into the hole, then the loop repeats */
+.ball { position: absolute; left: 6%; top: 88%; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0 45%, #d9d9d9 100%); box-shadow: 0 2px 3px rgba(0,0,0,.4); animation: putt 6s ease-in-out infinite; }
+@keyframes putt {
+  0% { left: 6%; top: 88%; opacity: 1; scale: 1; }
+  50% { left: calc(50% - 8px); top: 79.5%; opacity: 1; scale: 1; }
+  58% { left: calc(50% - 8px); top: 80.5%; opacity: 0; scale: .4; }
+  100% { left: calc(50% - 8px); top: 80.5%; opacity: 0; scale: .4; }
+}
+@media (max-width: 720px) { .course { grid-template-columns: 1fr; padding: 22px 16px; } .green { max-width: 170px; } .gn { font-size: 1.6rem; } .gs { font-size: 2.6rem; } }
+@media (prefers-reduced-motion: reduce) { .flag, .ball { animation: none; } .ball { opacity: 0; } }

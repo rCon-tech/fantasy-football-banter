@@ -1,4 +1,5 @@
 window.FFB_DATA = {
+ "golf": [{ "name": "Cook", "score": 79, "photo": "Cuffe" }],
  "managers": [
   "Con",
   "Davs",

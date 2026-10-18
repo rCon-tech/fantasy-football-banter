@@ -9,11 +9,11 @@
   // A manager's photo. crown: a winner's crown drops on; wasp: a loser gets buzzed and stung.
   // Con's sheet used a different photo for the wooden spoon, so we do too.
   let avN = 0;
-  function av(m, { size = 40, crown = false, wasp = false } = {}) {
+  function av(m, { size = 40, crown = false, wasp = false, alt = m } = {}) {
     const src = wasp && m === 'Con' ? 'img/Con-stung.webp' : `img/${m}.webp`;
     const delay = ((avN++ * 0.73) % 3.5).toFixed(2);
     return `<span class="av${crown ? ' crowned' : ''}${wasp ? ' stung' : ''}${size >= 60 ? ' big' : ''}" style="--s:${size}px;--d:${delay}s">` +
-      `<img class="face" src="${src}" alt="${esc(m)}" width="${size}" height="${size}" loading="lazy">` +
+      `<img class="face" src="${src}" alt="${esc(alt)}" width="${size}" height="${size}" loading="lazy">` +
       (crown ? '<span class="crown"><img src="img/crown.png" alt="Crown"></span>' : '') +
       (wasp ? '<span class="wasp"><img src="img/wasp.png" alt="Wasp"></span>' : '') + '</span>';
   }
@@ -243,6 +243,13 @@
       : '<p class="empty">No bets match. Nobody’s that confident.</p>';
   }
   renderBets();
+
+  /* ---------- FFB Golf: players who have broken 80 ---------- */
+  const golfers = [...(window.FFB_DATA.golf || [])].filter((g) => g.score < 80).sort((a, b) => a.score - b.score);
+  $('#golfList').innerHTML = golfers.map((g, i) => `<li class="gline">
+      ${av(g.photo, { size: 84, crown: i === 0, alt: g.name })}
+      <div class="gname"><span class="gn">${esc(g.name)}</span><span class="gc">Broke 80</span></div>
+      <div class="gscore"><span class="gs">${g.score}</span><span class="gl">Strokes</span></div></li>`).join('');
 
   /* ---------- live season (live.json is refreshed by the deploy workflow) ---------- */
   (async function loadLive() {
