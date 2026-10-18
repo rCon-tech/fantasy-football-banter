@@ -247,7 +247,7 @@
   /* ---------- FFB Golf: players who have broken 80 ---------- */
   const golfers = [...(window.FFB_DATA.golf || [])].filter((g) => g.score < 80).sort((a, b) => a.score - b.score);
   $('#golfList').innerHTML = golfers.map((g, i) => `<li class="gline">
-      ${av(g.photo, { size: 84, crown: i === 0, alt: g.name })}
+      ${av(g.photo, { size: 84, crown: g.score === golfers[0].score, alt: g.name })}
       <div class="gname"><span class="gn">${esc(g.name)}</span><span class="gc">Broke 80</span></div>
       <div class="gscore"><span class="gs">${g.score}</span><span class="gl">Strokes</span></div></li>`).join('');
 
@@ -263,7 +263,7 @@
       <div class="rb-track"><div class="rb-fill" style="width:${Math.max((it.value / top) * 100, 1.5)}%"></div></div>
       <a class="rb-src" href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.source)}</a></li>`).join('');
     const best = golfers[0];
-    $('#rarAvg').innerHTML = `${esc(gs.average.text)} ${best ? `At ${best.score}, ${esc(best.name)} is ${gs.average.menAverage - best.score} shots better than the average man.` : ''} <a href="${esc(gs.average.url)}" target="_blank" rel="noopener">${esc(gs.average.source)}</a>.`;
+    $('#rarAvg').innerHTML = `${esc(gs.average.text)} ${best ? `At ${best.score}, ${golfers.filter((g) => g.score === best.score).map((g) => esc(g.name)).join(' and ')} ${golfers.filter((g) => g.score === best.score).length > 1 ? 'are' : 'is'} ${gs.average.menAverage - best.score} shots better than the average man.` : ''} <a href="${esc(gs.average.url)}" target="_blank" rel="noopener">${esc(gs.average.source)}</a>.`;
   }
   // The same idea in FPL terms: how many of us are in the top 5% of managers worldwide this season.
   function renderFplRar(live) {
