@@ -38,7 +38,7 @@ try {
   entries.sort((a, b) => a.rank - b.rank);
   const live = {
     season: SEASON, league: league.league.name, gameweek: gw?.id ?? null, gameweekFinished: gw?.finished ?? null,
-    gameweeks: boot.events.length, updated: new Date().toISOString(), entries,
+    gameweeks: boot.events.length, totalPlayers: boot.total_players ?? null, updated: new Date().toISOString(), entries,
   };
   await writeFile(new URL('../live.json', import.meta.url), JSON.stringify(live, null, 2) + '\n');
   console.log(`live.json updated: gameweek ${live.gameweek}, ${entries.length} managers`);

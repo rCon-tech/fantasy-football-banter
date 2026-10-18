@@ -251,6 +251,29 @@
       <div class="gname"><span class="gn">${esc(g.name)}</span><span class="gc">Broke 80</span></div>
       <div class="gscore"><span class="gs">${g.score}</span><span class="gl">Strokes</span></div></li>`).join('');
 
+  const gs = window.FFB_DATA.golfStats;
+  if (gs) {
+    const hl = gs.headline, pct = Math.round(hl.value);
+    $('#rarPct').textContent = hl.display; $('#rarLab').textContent = hl.label;
+    $('#rarBalls').setAttribute('aria-label', `${pct} in every 100 golfers`);
+    $('#rarBalls').innerHTML = Array.from({ length: 100 }, (_, i) => `<i class="${i < pct ? 'on' : ''}"></i>`).join('');
+    $('#rarNote').innerHTML = `${esc(gs.note)} <a href="${esc(hl.url)}" target="_blank" rel="noopener">${esc(hl.source)}</a>.`;
+    const items = [{ ...hl, me: true }, ...gs.compare].sort((a, b) => b.value - a.value), top = items[0].value;
+    $('#rarBars').innerHTML = items.map((it) => `<li class="${it.me ? 'me' : ''}"><div class="rb-top"><span class="rb-val">${esc(it.display)}</span><span class="rb-lab">${esc(it.label)}${it.me ? ' ← Cuffe’s club' : ''}</span></div>
+      <div class="rb-track"><div class="rb-fill" style="width:${Math.max((it.value / top) * 100, 1.5)}%"></div></div>
+      <a class="rb-src" href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.source)}</a></li>`).join('');
+    const best = golfers[0];
+    $('#rarAvg').innerHTML = `${esc(gs.average.text)} ${best ? `At ${best.score}, ${esc(best.name)} is ${gs.average.menAverage - best.score} shots better than the average man.` : ''} <a href="${esc(gs.average.url)}" target="_blank" rel="noopener">${esc(gs.average.source)}</a>.`;
+  }
+  // The same idea in FPL terms: how many of us are in the top 5% of managers worldwide this season.
+  function renderFplRar(live) {
+    if (!live.totalPlayers) return;
+    const cut = Math.round(live.totalPlayers * 0.05), inside = live.entries.filter((r) => r.overallRank <= cut);
+    $('#fplRar').innerHTML = `<b>In Fantasy terms:</b> the top 5% of this season’s ${fmt(live.totalPlayers)} FPL managers means a world rank of ${fmt(cut)} or better. ` +
+      (inside.length ? `${inside.map((r) => `${esc(r.manager)} (${fmt(r.overallRank)})`).join(', ')} ${inside.length === 1 ? 'is' : 'are'} inside it right now.` : 'Nobody in the league is inside it right now.');
+    $('#fplRar').hidden = false;
+  }
+
   /* ---------- live season (live.json is refreshed by the deploy workflow) ---------- */
   (async function loadLive() {
     let live;
@@ -267,6 +290,7 @@
         <td>${fmt(r.gameweekPoints)}</td><td>${move(r)}</td><td>${fmt(r.overallRank)}</td></tr>`).join('') + '</tbody>';
     const when = new Date(live.updated);
     $('#liveNote').textContent = `The crown and wasp show who would win and lose if the season ended today. Standings from the FPL site, updated once each gameweek is fully finished. Last update: ${when.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}.`;
+    renderFplRar(live);
     $('#live').hidden = false; $('#liveNav').hidden = false;
   })();
 })();

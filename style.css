@@ -269,3 +269,33 @@ footer { margin-top: 56px; padding: 22px 0 32px; text-align: center; color: var(
 }
 @media (max-width: 720px) { .course { grid-template-columns: 1fr; padding: 22px 16px; } .green { max-width: 170px; } .gn { font-size: 1.6rem; } .gs { font-size: 2.6rem; } }
 @media (prefers-reduced-motion: reduce) { .flag, .ball { animation: none; } .ball { opacity: 0; } }
+
+/* golf: how rare is it */
+.rarity { margin-top: 20px; padding: 24px; background: #f6f1e3; color: #14301d; border-radius: 14px; border: 3px solid #d8b24a; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+.rarity a { color: #1d6a3a; }
+.rar-title { font-family: var(--font-d); font-weight: 400; letter-spacing: .06em; font-size: 2rem; margin: 0 0 12px; text-transform: none; }
+.rar-hero { display: grid; grid-template-columns: auto 1fr; gap: 20px 28px; align-items: center; }
+.rar-big { display: flex; flex-direction: column; }
+.rar-pct { font-family: var(--font-d); font-size: clamp(4.5rem, 14vw, 7rem); line-height: .9; color: #0f3a21; }
+.rar-lab { font-family: var(--font-c); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #2c7a43; }
+.balls { display: grid; grid-template-columns: repeat(20, 1fr); gap: 5px; min-width: 0; max-width: 460px; }
+.balls i { aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0 40%, #cfd6cf 100%); border: 1px solid #b5beb5; }
+.balls i.on { background: radial-gradient(circle at 35% 30%, #ffe27a 0 40%, #d8b24a 100%); border-color: #a6812a; box-shadow: 0 0 8px rgba(216,178,74,.9); animation: ball-pop .5s ease-out backwards; }
+.balls i.on:nth-child(2) { animation-delay: .1s; } .balls i.on:nth-child(3) { animation-delay: .2s; } .balls i.on:nth-child(4) { animation-delay: .3s; } .balls i.on:nth-child(5) { animation-delay: .4s; }
+@keyframes ball-pop { from { transform: scale(0); } 70% { transform: scale(1.3); } to { transform: scale(1); } }
+.rar-note { margin: 12px 0 0; font-size: .92rem; color: #3b5a45; }
+.rar-sub { font-family: var(--font-c); text-transform: uppercase; letter-spacing: .14em; font-size: .95rem; margin: 22px 0 8px; color: #2c7a43; }
+.rar-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.rb-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rb-val { font-family: var(--font-d); font-size: 1.9rem; line-height: 1; min-width: 4.6rem; font-variant-numeric: tabular-nums; }
+.rb-lab { font-weight: 500; min-width: 0; }
+.rb-track { height: 12px; background: #e4dcc6; border-radius: 6px; overflow: hidden; margin: 4px 0 3px; }
+.rb-fill { height: 100%; background: #2c7a43; border-radius: 6px; transform-origin: left; animation: bar-grow .9s ease-out backwards; }
+.rar-bars .me .rb-fill { background: #d8b24a; }
+.rar-bars .me .rb-val, .rar-bars .me .rb-lab { color: #8a6410; font-weight: 700; }
+@keyframes bar-grow { from { transform: scaleX(0); } }
+.rb-src { font-size: .78rem; }
+.rar-fact { margin: 18px 0 0; padding: 12px 14px; background: #fff; border-left: 6px solid #2c7a43; border-radius: 6px; }
+.rar-foot { margin: 18px 0 0; font-size: .8rem; color: #5a6f60; }
+@media (max-width: 720px) { .rarity { padding: 18px 16px; } .rar-hero { grid-template-columns: 1fr; } .balls { gap: 4px; } }
+@media (prefers-reduced-motion: reduce) { .balls i.on, .rb-fill { animation: none; } }
