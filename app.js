@@ -301,6 +301,67 @@
     spy();
   }
 
+  /* ---------- Echo Counter: shared counts kept in Firebase Realtime Database (REST) ---------- */
+  {
+    const dbUrl = (window.FFB_ECHO?.databaseURL || '').replace(/\/+$/, '');
+    const grid = $('#echoGrid'), status = $('#echoStatus');
+    let counts = Object.fromEntries(managers.map((m) => [m, 0])), busyUntil = 0, leaderKey = null, loaded = false;
+    const say = (t) => { status.textContent = t; };
+    const leaders = () => { const max = Math.max(...managers.map((m) => counts[m])); return max > 0 ? managers.filter((m) => counts[m] === max) : []; };
+
+    function build() { // the most-echoed manager(s) get the wasp
+      const lead = leaders();
+      leaderKey = lead.join();
+      grid.innerHTML = managers.map((m) => `<div class="ecard" data-m="${m}">
+        <button class="eface" type="button" data-act="add" aria-label="Add an echo for ${esc(m)}" ${dbUrl ? '' : 'disabled'}>${av(m, { size: 92, wasp: lead.includes(m) })}</button>
+        <div class="ename">${esc(m)}</div>
+        <div class="ecount" aria-live="polite"><span data-count>${counts[m]}</span></div>
+        <div class="elab">${counts[m] === 1 ? 'echo' : 'echoes'}</div>
+        <button class="eundo" type="button" data-act="undo" aria-label="Remove an echo from ${esc(m)}" ${dbUrl ? '' : 'disabled'}>Undo −1</button></div>`).join('');
+    }
+    function paint() {
+      if (leaders().join() !== leaderKey) { build(); return; }
+      grid.querySelectorAll('.ecard').forEach((c) => {
+        const n = counts[c.dataset.m];
+        c.querySelector('[data-count]').textContent = n;
+        c.querySelector('.elab').textContent = n === 1 ? 'echo' : 'echoes';
+      });
+    }
+    const call = async (path, opts) => { const r = await fetch(`${dbUrl}${path}`, opts); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); };
+    async function refresh() {
+      if (!dbUrl) return;
+      try { const data = (await call('/echoes.json')) || {}; managers.forEach((m) => { counts[m] = Number.isFinite(data[m]) ? data[m] : 0; }); loaded = true; paint(); }
+      catch { if (!loaded) say('Could not load the echo counts. Check your connection and refresh.'); }
+    }
+    async function change(m, delta) {
+      if (Date.now() < busyUntil) { say('Easy there, one echo at a time.'); return; }
+      if (delta < 0 && counts[m] <= 0) { say(`${m} has no echoes to remove.`); return; }
+      busyUntil = Date.now() + 1200;
+      const before = counts[m];
+      counts[m] = before + delta; paint();
+      const card = grid.querySelector(`.ecard[data-m="${m}"]`);
+      if (delta > 0 && card) { card.classList.remove('ping'); void card.offsetWidth; card.classList.add('ping'); }
+      try {
+        await call('/echoes.json', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ [m]: { '.sv': { increment: delta } } }) });
+        say(delta > 0 ? `Echo for ${m}! Tap Undo −1 if that was a mistake.` : `Removed an echo from ${m}.`);
+        await refresh(); // shows the true total, including anyone else tapping at the same time
+      } catch {
+        counts[m] = before; paint(); say('That did not save, so nothing changed. Try again.');
+      }
+    }
+    grid.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-act]'); if (!b) return;
+      change(b.closest('.ecard').dataset.m, b.dataset.act === 'add' ? 1 : -1);
+    });
+    build();
+    if (!dbUrl) say('The Echo Counter is not connected yet. Once the group database is set up, tapping a face will add an echo.');
+    else {
+      say('Loading the echo counts…'); refresh().then(() => { if (loaded) say(''); });
+      setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 10000);
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+    }
+  }
+
   /* ---------- live season (live.json is refreshed by the deploy workflow) ---------- */
   (async function loadLive() {
     let live;

@@ -34,7 +34,7 @@ jobs:
           FORCE: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
       - run: |
           mkdir _site
-          cp -r index.html style.css app.js data.js live.json img _site/
+          cp -r index.html style.css app.js data.js echo-config.js live.json img _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
