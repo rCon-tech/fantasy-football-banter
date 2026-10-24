@@ -17,6 +17,7 @@
       <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span></span><span></span><span></span></button>
       <nav id="nav" aria-label="Sections">
         <a href="#live" id="liveNav" hidden>Live</a>
+        <a href="#echo">Echo Counter</a>
         <a href="#table">League Table</a>
         <a href="#alltime">All-Time</a>
         <a href="#charts">Form Guide</a>
@@ -24,7 +25,6 @@
         <a href="#fame">Hall of Fame</a>
         <a href="#bets">Little Book of Bets</a>
         <a href="#golf">FFB Golf</a>
-        <a href="#echo">Echo Counter</a>
       </nav>
     </div>
   </header>
@@ -42,6 +42,13 @@
       <h2><span class="num live-num">LIVE</span> <span id="liveTitle">This Season</span></h2>
       <div class="card"><div class="tablewrap"><table id="liveTable"></table></div></div>
       <p class="note" id="liveNote"></p>
+    </section>
+
+    <section id="echo" class="wrap block echo">
+      <h2><span class="num">TAP</span> Echo Counter</h2>
+      <p class="echo-intro">Someone just said what was already in the chat? Tap their face to give them an echo.</p>
+      <div class="echo-grid" id="echoGrid"></div>
+      <p class="echo-status" id="echoStatus" role="status" aria-live="polite"></p>
     </section>
 
     <section id="table" class="wrap block">
@@ -132,12 +139,6 @@
       </div>
     </section>
 
-    <section id="echo" class="wrap block echo">
-      <h2><span class="num">08</span> Echo Counter</h2>
-      <p class="echo-intro">Someone just said what was already in the chat? Tap their face to give them an echo.</p>
-      <div class="echo-grid" id="echoGrid"></div>
-      <p class="echo-status" id="echoStatus" role="status" aria-live="polite"></p>
-    </section>
   </main>
 
   <footer><div class="wrap">Full time. Built from “Fantasy Football Banter – The Stats”. No VAR was consulted.</div></footer>
