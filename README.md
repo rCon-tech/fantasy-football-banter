@@ -11,14 +11,16 @@ Season positions are by points; ties are broken by better overall FPL rank.
 
 Titles and wooden spoons count from 2017/18, the first official season. Earlier seasons appear in the tables and charts only.
 
-## Echo Counter setup
+## Echo Counter setup (Vercel)
 
-The Echo Counter keeps its counts in a free Firebase Realtime Database so everyone sees the same numbers.
+The Echo Counter needs the Vercel version of the site. `api/echo.js` is a small serverless function that keeps the counts in Upstash Redis.
 
-1. Go to https://console.firebase.google.com and click **Add project** (turn Google Analytics off).
-2. In the project, open **Build → Realtime Database → Create database**. Pick a location near you and start in **locked mode**.
-3. Open the database's **Rules** tab, paste in the contents of `database.rules.json`, and click **Publish**. These rules only allow adding or removing a single echo for the five managers.
-4. On the **Data** tab, copy the database URL (it looks like `https://your-project-default-rtdb.europe-west1.firebasedatabase.app`).
-5. Paste it into `echo-config.js` as `databaseURL` and push to `main`.
+1. In Vercel, import this repo as a new project (no framework, no build command; `vercel.json` sets the rest).
+2. In the project's **Storage** tab, create an **Upstash Redis** database and connect it to the project. This adds `KV_REST_API_URL` and `KV_REST_API_TOKEN` automatically.
+3. Redeploy from the **Deployments** tab.
 
-Anyone with the site address can tap, because there is no login. The rules stop anything except +1 or −1 on the five names.
+The function only accepts +1 or −1 for the five managers, never goes below zero, and allows one change per second per visitor. There is no login, so anyone with the address can tap.
+
+## Live standings
+
+`.github/workflows/refresh-live.yml` checks FPL every morning. When a gameweek has finished it commits the new `live.json` to `main`, and Vercel publishes it.
